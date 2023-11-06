@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="scrolling_bg.css">
 </head>
 <body>
@@ -75,7 +74,12 @@
 
         function setImagesPool() {
             // Resolve this with a list of filenames inside the IMAGES_PATH folder
-            return Promise.resolve([]);
+            return Promise.resolve([
+                'computer.png',
+                'Emoji_u1f35e.svg',
+                'Smiley.svg',
+                'Twemoji2_1f60e.svg',
+            ]);
         }
 
         setImages(DEFAULT_IMAGE, DEFAULT_IMAGE);
