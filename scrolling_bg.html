@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="scrolling_bg.css">
+</head>
+<body>
+    <main>
+        <div class="grid">
+        </div>
+    </main>
+
+    <script>
+        const IMAGES_PATH = 'scrolling_bg-tiles';
+        const DEFAULT_IMAGE = 'default.png';
+
+        const gridEl = document.querySelector('div.grid');
+
+        const imageRerollTimeout = 60000;
+
+        var images = [DEFAULT_IMAGE, DEFAULT_IMAGE];
+        var imagePool = [];
+
+        var alternatePhase = false;
+        gridEl.addEventListener('animationiteration', (ev) => {
+            setImages(images[alternatePhase ? 1 : 0], images[alternatePhase ? 0 : 1]);
+            alternatePhase = !alternatePhase;
+        });
+
+
+        function setImages(imageA, imageB) {
+            gridEl.replaceChildren();
+            for(rowIndex = 0; rowIndex < 4; ++rowIndex) {
+                for(colIndex = 0; colIndex < 5; ++colIndex) {
+                    const newEl = document.createElement('div');
+
+                    if ((colIndex + rowIndex) % 2 != 0) {
+                        const newImg = document.createElement('img');
+                        newImg.setAttribute(
+                            'src',
+                            `${IMAGES_PATH}/${rowIndex % 2 == 0 ? imageA : (imageB || imageA)}`
+                        );
+
+                        newEl.classList.add('sprite');
+                        newEl.appendChild(newImg);
+                        newEl.setAttribute('data-row', rowIndex);
+                        newEl.setAttribute('data-col', colIndex);
+                    }
+
+                    gridEl.appendChild(newEl);
+                }
+            }
+        }
+
+        function rollImages(immediate = false) {
+            const first = Math.floor(Math.random() * (imagePool.length - 1));
+            let second;
+            while (
+                (second = Math.floor(Math.random() * (imagePool.length - 1))) == first &&
+                imagePool.length > 1
+            );
+
+            images = [imagePool[first], imagePool[second]];
+
+            if (immediate) {
+                setImages(imagePool[first], imagePool[second]);
+            }
+
+            setTimeout(() => {
+                rollImages()
+            }, imageRerollTimeout);
+        }
+
+        function setImagesPool() {
+            // Resolve this with a list of filenames inside the IMAGES_PATH folder
+            return Promise.resolve([]);
+        }
+
+        setImages(DEFAULT_IMAGE, DEFAULT_IMAGE);
+
+        setImagesPool().then(data => {
+            imagePool = data;
+            if (data.length > 0) {
+                rollImages(true);
+            }
+        });
+
+    </script>
+</body>
+</html>
